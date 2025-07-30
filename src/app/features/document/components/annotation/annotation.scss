@@ -1,0 +1,83 @@
+@use 'utils';
+
+:host {
+  display: contents;
+}
+
+.cw-document-annotation {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  left: 50%;
+  top: 0;
+  transform: translate3d(var(--left), var(--top), 0);
+
+  > * {
+    pointer-events: auto;
+  }
+
+  &__border {
+    position: absolute;
+    z-index: -1;
+    inset: 0 utils.remify(24) utils.remify(24) 0;
+    border: 1px solid #aaa;
+    background-color: #feffd1;
+    border-radius: utils.remify(4);
+    pointer-events: none;
+  }
+
+  &:has(:focus) {
+    z-index: 2;
+  }
+
+  &__delete {
+    bottom: 100%;
+    right: 100%;
+    position: absolute;
+    width: utils.remify(20);
+    height: utils.remify(20);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 300ms;
+    border-radius: 50%;
+    border: #fff;
+    color: #fff;
+    background-color: #aaa;
+    cursor: pointer;
+    pointer-events: auto;
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: utils.remify(-6);
+    }
+  }
+
+  &__content {
+    touch-action: none;
+    position: relative;
+    inset: utils.remify(-12) 0 0 utils.remify(-12);
+    outline-offset: utils.remify(-12);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: utils.remify(8);
+    border: utils.remify(12) solid transparent;
+    min-width: 3ch;
+    min-height: utils.remify(18);
+    width: min-content;
+    pointer-events: auto;
+
+    @supports not (-moz-appearance: none) {
+      resize: both;
+    }
+
+    > ::ng-deep br {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,25 @@
+<div
+  class="cw-document-annotation"
+  cwAnnotationDrag
+  [style.--left.px]="normalizedCoords().left"
+  [style.--top.px]="normalizedCoords().top"
+>
+  <div class="cw-document-annotation__border"></div>
+  <div
+    class="cw-document-annotation__content"
+    contenteditable
+    cwAutofocus
+    (keyup.escape)="handleEscPress($event)"
+    (input)="handleInput($event)"
+    (focusout)="handleBlur()"
+  ></div>
+  @if (formControl.value) {
+    <button
+      class="cw-document-annotation__delete"
+      (click)="delete.emit({ needConfirmation: true })"
+      (pointerdown)="$event.stopPropagation()"
+    >
+      ✕
+    </button>
+  }
+</div>

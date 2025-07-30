@@ -1,0 +1,12 @@
+:host {
+  display: contents;
+}
+
+.cw-document-page {
+  display: block;
+  pointer-events: none;
+
+  &__image {
+    display: block;
+  }
+}

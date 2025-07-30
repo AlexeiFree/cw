@@ -1,0 +1,28 @@
+@use 'utils';
+
+:host {
+  display: block;
+}
+
+.cw-doc-control-panel {
+  padding: utils.remify(16);
+  background-color: green;
+  color: white;
+
+  &__controls {
+    display: flex;
+  }
+
+  &__title {
+    margin-top: 0;
+  }
+
+  &__zoom-value {
+    width: utils.remify(50);
+    text-align: center;
+  }
+
+  &__save {
+    margin-left: utils.remify(6);
+  }
+}

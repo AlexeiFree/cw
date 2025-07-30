@@ -1,0 +1,1 @@
+export const FREQUENT_EVENTS_DEBOUNCE_TIME = 100;
