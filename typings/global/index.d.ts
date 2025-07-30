@@ -1,6 +1,4 @@
-export {};
-
-declare global {
+export declare global {
   interface KeyboardEvent {
     target: HTMLElement;
   }
