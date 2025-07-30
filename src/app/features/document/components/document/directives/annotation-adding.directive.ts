@@ -12,10 +12,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder } from '@angular/forms';
 
 import { IS_SERVER } from '@/shared/injection-tokens';
+import type { LayoutCoordinates } from '@/shared/types';
 import { listenForPreciseClick } from '@/shared/utils';
 
 import { DocumentDimensionsDirective } from '../../../directives';
-import type { DocumentAnnotationCoords } from '../../../types';
 import { Document } from '../document';
 
 @Directive({
@@ -59,7 +59,7 @@ export class AnnotationAddingDirective implements AfterViewInit {
     });
   }
 
-  private addAnnotation(coords: DocumentAnnotationCoords): void {
+  private addAnnotation(coords: LayoutCoordinates): void {
     this.documentComponent.annotationsFormArray.push(
       this.formBuilder.control({
         ...coords,

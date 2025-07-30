@@ -66,10 +66,10 @@ export class Document {
 
   public handleAnnotationDelete(
     index: number,
-    event?: AnnotationDeleteEvent,
+    event: AnnotationDeleteEvent,
   ): void {
     if (
-      !event?.needConfirmation ||
+      !event.needConfirmation ||
       confirm(
         `Подтверите удаление аннотации:\n${this.annotationsFormArray.at(index).value.text}`,
       )

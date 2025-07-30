@@ -1,3 +1,3 @@
-import { ZOOM_LEVELS } from '@/features/document/constants';
+import type { ZOOM_LEVELS } from '../constants';
 
 export type Zoom = (typeof ZOOM_LEVELS)[number];

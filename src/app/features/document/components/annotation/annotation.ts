@@ -10,13 +10,13 @@ import {
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import { AutofocusDirective } from '@/shared/directives';
+import type { LayoutCoordinates } from '@/shared/types';
 import { createValueAccessorProvider } from '@/shared/utils';
 
 import { DocumentZoomService } from '../../services';
 import type {
   AnnotationDeleteEvent,
   DocumentAnnotationBase,
-  DocumentAnnotationCoords,
 } from '../../types';
 import { normalizeCoords } from '../../utils';
 
@@ -45,10 +45,10 @@ export class DocumentAnnotation
 {
   private readonly zoomService = inject(DocumentZoomService);
 
-  public readonly delete = output<AnnotationDeleteEvent | undefined>();
+  public readonly delete = output<AnnotationDeleteEvent>();
 
-  public readonly formControl = new FormControl('', { nonNullable: true });
-  public readonly coords = signal<DocumentAnnotationCoords>({
+  public readonly textFormControl = new FormControl('', { nonNullable: true });
+  public readonly coords = signal<LayoutCoordinates>({
     top: 0,
     left: 0,
   });
@@ -63,24 +63,28 @@ export class DocumentAnnotation
   }
 
   public handleInput(event: InputEvent): void {
-    this.formControl.setValue(event.target.innerText);
+    this.textFormControl.setValue(event.target.innerText);
   }
 
   public handleBlur(): void {
-    if (!this.formControl.touched) {
-      this.formControl.markAsTouched();
+    if (!this.textFormControl.touched) {
+      this.textFormControl.markAsTouched();
     }
 
-    if (!this.formControl.value) {
-      this.delete.emit(undefined);
+    if (!this.textFormControl.value) {
+      this.delete.emit({ needConfirmation: false });
     }
   }
 
   public handleEscPress(event: KeyboardEvent): void {
-    if (this.formControl.value) {
+    if (this.textFormControl.value) {
       event.target.blur();
     } else {
-      this.delete.emit(undefined);
+      this.delete.emit({ needConfirmation: false });
     }
+  }
+
+  public handleDeleteClick(): void {
+    this.delete.emit({ needConfirmation: true });
   }
 }
