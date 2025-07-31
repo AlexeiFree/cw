@@ -1,4 +1,4 @@
-import type { WritableSignal } from '@angular/core';
+import type { Signal, WritableSignal } from '@angular/core';
 import type { FormControl } from '@angular/forms';
 
 import type { LayoutCoordinates } from '@/shared/types';
@@ -11,7 +11,12 @@ export interface AnnotationDeleteEvent {
   needConfirmation?: boolean;
 }
 
-export interface DocumentAnnotationBase {
+export interface DocumentAnnotationValueAccessorBase {
   coords: WritableSignal<LayoutCoordinates>;
   textFormControl: FormControl<string>;
+}
+
+export interface DocumentAnnotationBase
+  extends DocumentAnnotationValueAccessorBase {
+  lastZoom: Signal<number>;
 }

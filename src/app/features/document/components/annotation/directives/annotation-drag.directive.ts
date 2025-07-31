@@ -22,8 +22,7 @@ import type { LayoutCoordinates } from '@/shared/types';
 import { animationFrame$ } from '@/shared/utils';
 
 import { DocumentZoomService } from '../../../services';
-import { normalizeCoords } from '../../../utils';
-import { DOCUMENT_ANNOTATION } from '../annotation.token';
+import { AnnotationDataService } from '../services';
 
 @Directive({
   selector: '[cwAnnotationDrag]',
@@ -34,7 +33,7 @@ export class AnnotationDragDirective implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly element =
     inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
-  private readonly annotation = inject(DOCUMENT_ANNOTATION);
+  private readonly data = inject(AnnotationDataService);
 
   private readonly pointerDown$ = fromEvent<PointerEvent>(
     this.element,
@@ -54,25 +53,20 @@ export class AnnotationDragDirective implements OnInit {
   }
 
   public handlePointerDown(event: PointerEvent): LayoutCoordinates {
-    const coords = this.annotation.coords();
-    const left = event.clientX - coords.left * this.zoomService.zoom();
-    const top = event.clientY - coords.top * this.zoomService.zoom();
-
+    const { coords, coordsZoom } = this.data;
+    const zoom = this.zoomService.zoom();
+    const left = event.clientX - (coords().left / coordsZoom()) * zoom;
+    const top = event.clientY - (coords().top / coordsZoom()) * zoom;
     this.element.setPointerCapture(event.pointerId);
 
     return { left, top };
   }
 
   public handlePointerMove(move: PointerEvent, start: LayoutCoordinates): void {
-    this.annotation.coords.set(
-      normalizeCoords(
-        {
-          left: move.clientX - start.left,
-          top: move.clientY - start.top,
-        },
-        this.zoomService.zoom(),
-      ),
-    );
+    this.data.coords.set({
+      left: move.clientX - start.left,
+      top: move.clientY - start.top,
+    });
   }
 
   private initDragging(): void {

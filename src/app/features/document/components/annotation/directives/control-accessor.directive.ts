@@ -1,35 +1,17 @@
-import {
-  DestroyRef,
-  Directive,
-  inject,
-  Injector,
-  WritableSignal,
-} from '@angular/core';
+import { DestroyRef, Directive, inject, Injector } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import {
-  ControlValueAccessor,
-  type FormControl,
-  TouchedChangeEvent,
-} from '@angular/forms';
+import { ControlValueAccessor, TouchedChangeEvent } from '@angular/forms';
 
 import { combineLatest, filter } from 'rxjs';
 
-import type { LayoutCoordinates } from '@/shared/types';
-
-import type {
-  DocumentAnnotationBase,
-  DocumentAnnotationData,
-} from '../../../types';
+import type { DocumentAnnotationData } from '../../../types';
+import { AnnotationDataService } from '../services';
 
 @Directive()
-export abstract class ControlAccessorDirective
-  implements ControlValueAccessor, DocumentAnnotationBase
-{
+export abstract class ControlAccessorDirective implements ControlValueAccessor {
+  protected readonly data = inject(AnnotationDataService);
   protected readonly destroyRef = inject(DestroyRef);
   protected readonly injector = inject(Injector);
-
-  public abstract readonly coords: WritableSignal<LayoutCoordinates>;
-  public abstract readonly textFormControl: FormControl<string>;
 
   protected setControlTouched?: () => void;
 
@@ -37,8 +19,8 @@ export abstract class ControlAccessorDirective
 
   public initHandleControlChange(): void {
     combineLatest([
-      this.textFormControl.valueChanges,
-      toObservable(this.coords, { injector: this.injector }),
+      this.data.textFormControl.valueChanges,
+      toObservable(this.data.coords, { injector: this.injector }),
     ])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([text, { top, left }]) => {
@@ -51,7 +33,7 @@ export abstract class ControlAccessorDirective
   }
 
   public initHandleTouchedChange(): void {
-    this.textFormControl.events
+    this.data.textFormControl.events
       .pipe(
         filter((event) => event instanceof TouchedChangeEvent && event.touched),
         takeUntilDestroyed(this.destroyRef),
@@ -62,8 +44,8 @@ export abstract class ControlAccessorDirective
   }
 
   public writeValue({ text, top, left }: DocumentAnnotationData): void {
-    this.textFormControl.setValue(text);
-    this.coords.set({ top, left });
+    this.data.textFormControl.setValue(text);
+    this.data.coords.set({ top, left });
   }
 
   public registerOnChange(fn: () => void): void {

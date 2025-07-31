@@ -1,8 +1,8 @@
 <div
   class="cw-document-annotation"
   cwAnnotationDrag
-  [style.--left.px]="coords().left"
-  [style.--top.px]="coords().top"
+  [style.--left.px]="normalizedCoords().left"
+  [style.--top.px]="normalizedCoords().top"
 >
   <div class="cw-document-annotation__border"></div>
   <div
@@ -13,7 +13,7 @@
     (input)="handleInput($event)"
     (focusout)="handleBlur()"
   ></div>
-  @if (textFormControl.value) {
+  @if (data.textFormControl.value) {
     <button
       class="cw-document-annotation__delete"
       (click)="handleDeleteClick()"

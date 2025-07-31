@@ -2,52 +2,52 @@ import {
   ChangeDetectionStrategy,
   Component,
   forwardRef,
+  inject,
+  linkedSignal,
   OnInit,
   output,
-  signal,
+  untracked,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AutofocusDirective } from '@/shared/directives';
-import type { LayoutCoordinates } from '@/shared/types';
 import { createValueAccessorProvider } from '@/shared/utils';
 
-import type {
-  AnnotationDeleteEvent,
-  DocumentAnnotationBase,
-} from '../../types';
+import { DocumentZoomService } from '../../services';
+import type { AnnotationDeleteEvent } from '../../types';
+import { normalizeCoords } from '../../utils';
 
-import { DOCUMENT_ANNOTATION } from './annotation.token';
 import {
   AnnotationDragDirective,
   ControlAccessorDirective,
 } from './directives';
+import { AnnotationDataService } from './services';
 
 @Component({
   selector: 'cw-document-annotation',
   templateUrl: './annotation.html',
   styleUrl: './annotation.scss',
   providers: [
+    AnnotationDataService,
     createValueAccessorProvider(forwardRef(() => DocumentAnnotation)),
-    {
-      provide: DOCUMENT_ANNOTATION,
-      useExisting: forwardRef(() => DocumentAnnotation),
-    },
   ],
   imports: [AutofocusDirective, ReactiveFormsModule, AnnotationDragDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocumentAnnotation
   extends ControlAccessorDirective
-  implements OnInit, DocumentAnnotationBase
+  implements OnInit
 {
+  private readonly zoomService = inject(DocumentZoomService);
+
   public readonly delete = output<AnnotationDeleteEvent>();
 
-  public readonly textFormControl = new FormControl('', { nonNullable: true });
-  public readonly coords = signal<LayoutCoordinates>({
-    top: 0,
-    left: 0,
-  });
+  public readonly normalizedCoords = linkedSignal(() =>
+    normalizeCoords(
+      this.data.coords(),
+      untracked(() => this.zoomService.zoom()),
+    ),
+  );
 
   public ngOnInit(): void {
     this.initHandleControlChange();
@@ -55,21 +55,21 @@ export class DocumentAnnotation
   }
 
   public handleInput(event: InputEvent): void {
-    this.textFormControl.setValue(event.target.innerText);
+    this.data.textFormControl.setValue(event.target.innerText);
   }
 
   public handleBlur(): void {
-    if (!this.textFormControl.touched) {
-      this.textFormControl.markAsTouched();
+    if (!this.data.textFormControl.touched) {
+      this.data.textFormControl.markAsTouched();
     }
 
-    if (!this.textFormControl.value) {
+    if (!this.data.textFormControl.value) {
       this.delete.emit({ needConfirmation: false });
     }
   }
 
   public handleEscPress(event: KeyboardEvent): void {
-    if (this.textFormControl.value) {
+    if (this.data.textFormControl.value) {
       event.target.blur();
     } else {
       this.delete.emit({ needConfirmation: false });
