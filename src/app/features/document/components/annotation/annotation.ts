@@ -2,8 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   forwardRef,
-  inject,
-  linkedSignal,
   OnInit,
   output,
   signal,
@@ -14,12 +12,10 @@ import { AutofocusDirective } from '@/shared/directives';
 import type { LayoutCoordinates } from '@/shared/types';
 import { createValueAccessorProvider } from '@/shared/utils';
 
-import { DocumentZoomService } from '../../services';
 import type {
   AnnotationDeleteEvent,
   DocumentAnnotationBase,
 } from '../../types';
-import { normalizeCoords } from '../../utils';
 
 import { DOCUMENT_ANNOTATION } from './annotation.token';
 import {
@@ -45,8 +41,6 @@ export class DocumentAnnotation
   extends ControlAccessorDirective
   implements OnInit, DocumentAnnotationBase
 {
-  private readonly zoomService = inject(DocumentZoomService);
-
   public readonly delete = output<AnnotationDeleteEvent>();
 
   public readonly textFormControl = new FormControl('', { nonNullable: true });
@@ -54,10 +48,6 @@ export class DocumentAnnotation
     top: 0,
     left: 0,
   });
-
-  public readonly normalizedCoords = linkedSignal(() =>
-    normalizeCoords(this.coords(), this.zoomService.zoom()),
-  );
 
   public ngOnInit(): void {
     this.initHandleControlChange();

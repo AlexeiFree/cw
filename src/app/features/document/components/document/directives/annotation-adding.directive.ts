@@ -16,12 +16,14 @@ import type { LayoutCoordinates } from '@/shared/types';
 import { listenForPreciseClick } from '@/shared/utils';
 
 import { DocumentDimensionsDirective } from '../../../directives';
+import { DocumentZoomService } from '../../../services';
 import { Document } from '../document';
 
 @Directive({
   selector: '[cwAnnotationAdding]',
 })
 export class AnnotationAddingDirective implements AfterViewInit {
+  private readonly zoomService = inject(DocumentZoomService);
   private readonly isServer = inject(IS_SERVER);
   private readonly destroyRef = inject(DestroyRef);
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -54,8 +56,10 @@ export class AnnotationAddingDirective implements AfterViewInit {
       return;
 
     this.addAnnotation({
-      left: click.offsetX - this.documentDimensions().width / 2,
-      top: click.offsetY,
+      left:
+        (click.offsetX - this.documentDimensions().width / 2) /
+        this.zoomService.zoom(),
+      top: click.offsetY / this.zoomService.zoom(),
     });
   }
 

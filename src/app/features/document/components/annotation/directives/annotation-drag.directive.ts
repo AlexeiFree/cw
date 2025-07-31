@@ -21,12 +21,15 @@ import { IS_SERVER } from '@/shared/injection-tokens';
 import type { LayoutCoordinates } from '@/shared/types';
 import { animationFrame$ } from '@/shared/utils';
 
+import { DocumentZoomService } from '../../../services';
+import { normalizeCoords } from '../../../utils';
 import { DOCUMENT_ANNOTATION } from '../annotation.token';
 
 @Directive({
   selector: '[cwAnnotationDrag]',
 })
 export class AnnotationDragDirective implements OnInit {
+  private readonly zoomService = inject(DocumentZoomService);
   private readonly isServer = inject(IS_SERVER);
   private readonly destroyRef = inject(DestroyRef);
   private readonly element =
@@ -52,8 +55,8 @@ export class AnnotationDragDirective implements OnInit {
 
   public handlePointerDown(event: PointerEvent): LayoutCoordinates {
     const coords = this.annotation.coords();
-    const left = event.clientX - coords.left;
-    const top = event.clientY - coords.top;
+    const left = event.clientX - coords.left * this.zoomService.zoom();
+    const top = event.clientY - coords.top * this.zoomService.zoom();
 
     this.element.setPointerCapture(event.pointerId);
 
@@ -61,10 +64,15 @@ export class AnnotationDragDirective implements OnInit {
   }
 
   public handlePointerMove(move: PointerEvent, start: LayoutCoordinates): void {
-    this.annotation.coords.set({
-      left: move.clientX - start.left,
-      top: move.clientY - start.top,
-    });
+    this.annotation.coords.set(
+      normalizeCoords(
+        {
+          left: move.clientX - start.left,
+          top: move.clientY - start.top,
+        },
+        this.zoomService.zoom(),
+      ),
+    );
   }
 
   private initDragging(): void {
