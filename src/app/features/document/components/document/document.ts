@@ -5,33 +5,33 @@ import {
   inject,
   input,
   numberAttribute,
-} from '@angular/core';
+} from "@angular/core";
 import {
   takeUntilDestroyed,
   toObservable,
   toSignal,
-} from '@angular/core/rxjs-interop';
-import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+} from "@angular/core/rxjs-interop";
+import { NonNullableFormBuilder, ReactiveFormsModule } from "@angular/forms";
 
-import { switchMap } from 'rxjs';
+import { switchMap } from "rxjs";
 
-import { Logger } from '@/shared/services';
+import { Logger } from "@/shared/services";
 
-import { NO_ANNOTATIONS_LOG } from '../../constants';
-import { DocumentDimensionsDirective } from '../../directives';
-import { DocumentDataService, DocumentZoomService } from '../../services';
+import { NO_ANNOTATIONS_LOG } from "../../constants";
+import { DocumentDimensionsDirective } from "../../directives";
+import { DocumentDataService, DocumentZoomService } from "../../services";
 import type {
   AnnotationDeleteEvent,
   DocumentAnnotationData,
-} from '../../types';
-import { DocumentAnnotation } from '../annotation';
-import { DocumentControlPanel } from '../control-panel';
-import { DocumentPagesList } from '../pages-list';
+} from "../../types";
+import { DocumentAnnotation } from "../annotation";
+import { DocumentControlPanel } from "../control-panel";
+import { DocumentPagesList } from "../pages-list";
 
-import { AnnotationAddingDirective } from './directives';
+import { AnnotationAddingDirective } from "./directives";
 
 @Component({
-  selector: 'cw-document',
+  selector: "cw-document",
   imports: [
     DocumentControlPanel,
     DocumentAnnotation,
@@ -40,8 +40,8 @@ import { AnnotationAddingDirective } from './directives';
     DocumentDimensionsDirective,
     DocumentPagesList,
   ],
-  templateUrl: './document.html',
-  styleUrl: './document.scss',
+  templateUrl: "./document.html",
+  styleUrl: "./document.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Document {
@@ -83,7 +83,7 @@ export class Document {
   public handleDocumentSave(): void {
     const annotationsText = this.annotationsFormArray.value
       .map(({ text }, index) => `${index + 1}) ${text}`)
-      .join('\n');
+      .join("\n");
 
     this.logger.log(
       `Аннотации (${this.documentData()?.name}):\n${annotationsText || NO_ANNOTATIONS_LOG}`,
