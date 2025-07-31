@@ -1,4 +1,11 @@
-import { Component, inject, input, linkedSignal, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+  linkedSignal,
+  output,
+} from '@angular/core';
 
 import { ZOOM_LEVELS } from '../../constants';
 import { DocumentZoomService } from '../../services';
@@ -7,6 +14,7 @@ import { DocumentZoomService } from '../../services';
   selector: 'cw-document-control-panel',
   templateUrl: './control-panel.html',
   styleUrl: './control-panel.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocumentControlPanel {
   public readonly zoomService = inject(DocumentZoomService);

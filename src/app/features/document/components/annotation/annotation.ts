@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   forwardRef,
   inject,
@@ -38,6 +39,7 @@ import {
     },
   ],
   imports: [AutofocusDirective, ReactiveFormsModule, AnnotationDragDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocumentAnnotation
   extends ControlAccessorDirective

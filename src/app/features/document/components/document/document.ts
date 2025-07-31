@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   inject,
@@ -41,6 +42,7 @@ import { AnnotationAddingDirective } from './directives';
   ],
   templateUrl: './document.html',
   styleUrl: './document.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Document {
   public readonly zoomService = inject(DocumentZoomService);
