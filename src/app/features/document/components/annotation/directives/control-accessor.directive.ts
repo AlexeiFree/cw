@@ -1,11 +1,11 @@
-import { DestroyRef, Directive, inject, Injector } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { ControlValueAccessor, TouchedChangeEvent } from '@angular/forms';
+import { DestroyRef, Directive, inject, Injector } from "@angular/core";
+import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
+import { ControlValueAccessor, TouchedChangeEvent } from "@angular/forms";
 
-import { combineLatest, filter } from 'rxjs';
+import { combineLatest, filter } from "rxjs";
 
-import type { DocumentAnnotationData } from '../../../types';
-import { AnnotationDataService } from '../services';
+import type { DocumentAnnotationData } from "../../../types";
+import { AnnotationDataService } from "../services";
 
 @Directive()
 export abstract class ControlAccessorDirective implements ControlValueAccessor {
@@ -17,7 +17,7 @@ export abstract class ControlAccessorDirective implements ControlValueAccessor {
 
   private handleChange?: (_: DocumentAnnotationData) => void;
 
-  public initHandleControlChange(): void {
+  public initControlChangeHandling(): void {
     combineLatest([
       this.data.textFormControl.valueChanges,
       toObservable(this.data.coords, { injector: this.injector }),
@@ -32,7 +32,7 @@ export abstract class ControlAccessorDirective implements ControlValueAccessor {
       });
   }
 
-  public initHandleTouchedChange(): void {
+  public initControlTouchedHandling(): void {
     this.data.textFormControl.events
       .pipe(
         filter((event) => event instanceof TouchedChangeEvent && event.touched),

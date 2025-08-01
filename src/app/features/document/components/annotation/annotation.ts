@@ -7,26 +7,26 @@ import {
   OnInit,
   output,
   untracked,
-} from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+} from "@angular/core";
+import { ReactiveFormsModule } from "@angular/forms";
 
-import { AutofocusDirective } from '@/shared/directives';
-import { createValueAccessorProvider } from '@/shared/utils';
+import { AutofocusDirective } from "@/shared/directives";
+import { createValueAccessorProvider } from "@/shared/utils";
 
-import { DocumentZoomService } from '../../services';
-import type { AnnotationDeleteEvent } from '../../types';
-import { normalizeCoords } from '../../utils';
+import { DocumentZoomService } from "../../services";
+import type { AnnotationDeleteEvent } from "../../types";
+import { normalizeCoords } from "../../utils";
 
 import {
   AnnotationDragDirective,
   ControlAccessorDirective,
-} from './directives';
-import { AnnotationDataService } from './services';
+} from "./directives";
+import { AnnotationDataService } from "./services";
 
 @Component({
-  selector: 'cw-document-annotation',
-  templateUrl: './annotation.html',
-  styleUrl: './annotation.scss',
+  selector: "cw-document-annotation",
+  templateUrl: "./annotation.html",
+  styleUrl: "./annotation.scss",
   providers: [
     AnnotationDataService,
     createValueAccessorProvider(forwardRef(() => DocumentAnnotation)),
@@ -50,8 +50,8 @@ export class DocumentAnnotation
   );
 
   public ngOnInit(): void {
-    this.initHandleControlChange();
-    this.initHandleTouchedChange();
+    this.initControlChangeHandling();
+    this.initControlTouchedHandling();
   }
 
   public handleInput(event: InputEvent): void {
