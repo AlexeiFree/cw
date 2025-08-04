@@ -72,10 +72,6 @@
     width: min-content;
     pointer-events: auto;
 
-    @supports not (-moz-appearance: none) {
-      resize: both;
-    }
-
     > ::ng-deep br {
       display: none;
     }

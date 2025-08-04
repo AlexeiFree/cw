@@ -1,86 +1,82 @@
 import {
+  ChangeDetectionStrategy,
   Component,
+  computed,
   forwardRef,
   inject,
-  linkedSignal,
   OnInit,
   output,
-  signal,
+  untracked,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AutofocusDirective } from '@/shared/directives';
 import { createValueAccessorProvider } from '@/shared/utils';
 
 import { DocumentZoomService } from '../../services';
-import type {
-  AnnotationDeleteEvent,
-  DocumentAnnotationBase,
-  DocumentAnnotationCoords,
-} from '../../types';
+import type { AnnotationDeleteEvent } from '../../types';
 import { normalizeCoords } from '../../utils';
 
-import { DOCUMENT_ANNOTATION } from './annotation.token';
 import {
   AnnotationDragDirective,
   ControlAccessorDirective,
 } from './directives';
+import { AnnotationDataService } from './services';
 
 @Component({
   selector: 'cw-document-annotation',
   templateUrl: './annotation.html',
   styleUrl: './annotation.scss',
   providers: [
+    AnnotationDataService,
     createValueAccessorProvider(forwardRef(() => DocumentAnnotation)),
-    {
-      provide: DOCUMENT_ANNOTATION,
-      useExisting: forwardRef(() => DocumentAnnotation),
-    },
   ],
   imports: [AutofocusDirective, ReactiveFormsModule, AnnotationDragDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocumentAnnotation
   extends ControlAccessorDirective
-  implements OnInit, DocumentAnnotationBase
+  implements OnInit
 {
-  private readonly zoomService = inject(DocumentZoomService);
+  public readonly delete = output<AnnotationDeleteEvent>();
 
-  public readonly delete = output<AnnotationDeleteEvent | undefined>();
-
-  public readonly formControl = new FormControl('', { nonNullable: true });
-  public readonly coords = signal<DocumentAnnotationCoords>({
-    top: 0,
-    left: 0,
-  });
-
-  public readonly normalizedCoords = linkedSignal(() =>
-    normalizeCoords(this.coords(), this.zoomService.zoom()),
+  protected readonly normalizedCoords = computed(() =>
+    normalizeCoords(
+      this.data.coords(),
+      untracked(() => this.#zoomService.zoom()),
+    ),
   );
 
+  readonly #zoomService = inject(DocumentZoomService);
+
   public ngOnInit(): void {
-    this.initHandleControlChange();
-    this.initHandleTouchedChange();
+    this.initControlChangeHandling();
+    this.initControlTouchedHandling();
   }
 
-  public handleInput(event: InputEvent): void {
-    this.formControl.setValue(event.target.innerText);
+  protected handleInput(event: InputEvent): void {
+    this.data.textFormControl.setValue(event.target.innerText);
   }
 
-  public handleBlur(): void {
-    if (!this.formControl.touched) {
-      this.formControl.markAsTouched();
+  protected handleBlur(): void {
+    if (!this.data.textFormControl.touched) {
+      this.data.textFormControl.markAsTouched();
     }
 
-    if (!this.formControl.value) {
-      this.delete.emit(undefined);
+    if (!this.data.textFormControl.value) {
+      this.delete.emit({ needConfirmation: false });
     }
   }
 
-  public handleEscPress(event: KeyboardEvent): void {
-    if (this.formControl.value) {
+  protected handleEscPress(event: KeyboardEvent): void {
+    if (this.data.textFormControl.value) {
       event.target.blur();
     } else {
-      this.delete.emit(undefined);
+      this.delete.emit({ needConfirmation: false });
     }
+  }
+
+  protected handleDeleteClick(): void {
+    this.delete.emit({ needConfirmation: true });
   }
 }

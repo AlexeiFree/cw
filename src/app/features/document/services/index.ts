@@ -1,2 +1,2 @@
-export * from './document-data.service';
-export * from './document-zoom.service';
+export * from './document-data';
+export * from './document-zoom';

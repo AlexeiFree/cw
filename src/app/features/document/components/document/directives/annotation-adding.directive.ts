@@ -12,40 +12,41 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder } from '@angular/forms';
 
 import { IS_SERVER } from '@/shared/injection-tokens';
+import type { LayoutCoordinates } from '@/shared/types';
 import { listenForPreciseClick } from '@/shared/utils';
 
 import { DocumentDimensionsDirective } from '../../../directives';
-import type { DocumentAnnotationCoords } from '../../../types';
 import { Document } from '../document';
 
 @Directive({
   selector: '[cwAnnotationAdding]',
 })
 export class AnnotationAddingDirective implements AfterViewInit {
-  private readonly isServer = inject(IS_SERVER);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-  private readonly changeDetectorRef = inject(ChangeDetectorRef);
-  private readonly documentComponent = inject(Document);
-  private readonly formBuilder = inject(NonNullableFormBuilder);
-  private readonly documentDimensions = contentChild.required(
+  public readonly annotationsContainerRef = input.required<HTMLElement>();
+
+  protected readonly documentDimensions = contentChild.required(
     DocumentDimensionsDirective,
   );
 
-  public readonly annotationsContainerRef = input.required<HTMLElement>();
+  readonly #isServer = inject(IS_SERVER);
+  readonly #destroyRef = inject(DestroyRef);
+  readonly #elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  readonly #changeDetectorRef = inject(ChangeDetectorRef);
+  readonly #documentComponent = inject(Document);
+  readonly #formBuilder = inject(NonNullableFormBuilder);
 
   public ngAfterViewInit(): void {
-    if (this.isServer) return;
+    if (this.#isServer) return;
 
-    listenForPreciseClick(this.elementRef.nativeElement)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    listenForPreciseClick(this.#elementRef.nativeElement)
+      .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((event: PointerEvent) => {
-        this.changeDetectorRef.markForCheck();
-        this.handleBodyClick(event);
+        this.#changeDetectorRef.markForCheck();
+        this.#handleBodyClick(event);
       });
   }
 
-  public handleBodyClick(click: MouseEvent): void {
+  #handleBodyClick(click: MouseEvent): void {
     if (
       click
         .composedPath()
@@ -53,15 +54,15 @@ export class AnnotationAddingDirective implements AfterViewInit {
     )
       return;
 
-    this.addAnnotation({
-      left: click.offsetX - this.documentDimensions().width / 2,
+    this.#addAnnotation({
+      left: click.offsetX - this.documentDimensions().width() / 2,
       top: click.offsetY,
     });
   }
 
-  private addAnnotation(coords: DocumentAnnotationCoords): void {
-    this.documentComponent.annotationsFormArray.push(
-      this.formBuilder.control({
+  #addAnnotation(coords: LayoutCoordinates): void {
+    this.#documentComponent.annotationsFormArray.push(
+      this.#formBuilder.control({
         ...coords,
         text: '',
       }),

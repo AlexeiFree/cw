@@ -3,15 +3,15 @@
 
   <div class="cw-doc-control-panel__controls">
     <button
-      [disabled]="zoom() === zoomLevels[0]"
-      (click)="zoomService.changeZoom(false)"
+      [disabled]="zoomService.isMin()"
+      (click)="zoomService.decrementZoom()"
     >
       -
     </button>
     <span class="cw-doc-control-panel__zoom-value">{{ displayZoom() }}</span>
     <button
-      [disabled]="zoom() === zoomLevels.at(-1)"
-      (click)="zoomService.changeZoom(true)"
+      [disabled]="zoomService.isMax()"
+      (click)="zoomService.incrementZoom()"
     >
       +
     </button>

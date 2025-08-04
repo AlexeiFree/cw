@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   inject,
@@ -10,7 +11,12 @@ import {
   toObservable,
   toSignal,
 } from '@angular/core/rxjs-interop';
-import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormArray,
+  FormControl,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+} from '@angular/forms';
 
 import { switchMap } from 'rxjs';
 
@@ -41,35 +47,42 @@ import { AnnotationAddingDirective } from './directives';
   ],
   templateUrl: './document.html',
   styleUrl: './document.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Document {
-  public readonly zoomService = inject(DocumentZoomService);
-  private readonly dataService = inject(DocumentDataService);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly formBuilder = inject(NonNullableFormBuilder);
-  private readonly logger = inject(Logger);
-
   public readonly documentId = input.required({ transform: numberAttribute });
+  public readonly annotationsFormArray: FormArray<
+    FormControl<DocumentAnnotationData>
+  >;
 
-  public readonly annotationsFormArray =
-    this.formBuilder.array<DocumentAnnotationData>([]);
-
+  protected readonly zoomService = inject(DocumentZoomService);
   protected readonly documentData = toSignal(
     toObservable(this.documentId).pipe(
       switchMap((documentId) =>
-        this.dataService
+        this.#dataService
           .fetchDocumentData(documentId)
-          .pipe(takeUntilDestroyed(this.destroyRef)),
+          .pipe(takeUntilDestroyed(this.#destroyRef)),
       ),
     ),
   );
 
-  public handleAnnotationDelete(
+  readonly #dataService = inject(DocumentDataService);
+  readonly #destroyRef = inject(DestroyRef);
+  readonly #formBuilder = inject(NonNullableFormBuilder);
+  readonly #logger = inject(Logger);
+
+  constructor() {
+    this.annotationsFormArray = this.#formBuilder.array<DocumentAnnotationData>(
+      [],
+    );
+  }
+
+  protected handleAnnotationDelete(
     index: number,
-    event?: AnnotationDeleteEvent,
+    event: AnnotationDeleteEvent,
   ): void {
     if (
-      !event?.needConfirmation ||
+      !event.needConfirmation ||
       confirm(
         `Подтверите удаление аннотации:\n${this.annotationsFormArray.at(index).value.text}`,
       )
@@ -78,12 +91,12 @@ export class Document {
     }
   }
 
-  public handleDocumentSave(): void {
+  protected handleDocumentSave(): void {
     const annotationsText = this.annotationsFormArray.value
       .map(({ text }, index) => `${index + 1}) ${text}`)
       .join('\n');
 
-    this.logger.log(
+    this.#logger.log(
       `Аннотации (${this.documentData()?.name}):\n${annotationsText || NO_ANNOTATIONS_LOG}`,
     );
   }

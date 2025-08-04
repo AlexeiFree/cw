@@ -1,20 +1,9 @@
-import { WritableSignal } from '@angular/core';
-import type { FormControl } from '@angular/forms';
+import type { LayoutCoordinates } from "@/shared/types";
 
-export interface DocumentAnnotationCoords {
-  top: number;
-  left: number;
-}
-
-export interface DocumentAnnotationData extends DocumentAnnotationCoords {
+export interface DocumentAnnotationData extends LayoutCoordinates {
   text: string;
 }
 
 export interface AnnotationDeleteEvent {
   needConfirmation?: boolean;
-}
-
-export interface DocumentAnnotationBase {
-  coords: WritableSignal<DocumentAnnotationCoords>;
-  formControl: FormControl<string>;
 }
