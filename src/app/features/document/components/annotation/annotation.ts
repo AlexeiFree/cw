@@ -44,10 +44,7 @@ export class DocumentAnnotation implements OnInit {
   }
 
   public ngOnInit(): void {
-    console.log(2);
     this.normalizedCoords = computed(() => {
-      console.log(1, this.annotationData.coords());
-
       return normalizeCoords(
         this.annotationData.coords(),
         untracked(() => this.#zoomService.zoom()),
