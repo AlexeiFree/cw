@@ -7,9 +7,12 @@ import type { AnnotationCreationData, AnnotationData } from '../../types';
 })
 export class DocumentAnnotationsService {
   public readonly annotations: Signal<AnnotationData[]>;
-  public readonly untrackedAnnotations: Signal<AnnotationData[]>;
 
   readonly #annotations = signal<AnnotationData[]>([]);
+
+  public get annotationsRaw(): AnnotationData[] {
+    return untracked(() => this.annotations());
+  }
 
   public get(index: number): AnnotationData {
     return untracked(() => this.#annotations()[index]);
@@ -34,6 +37,5 @@ export class DocumentAnnotationsService {
 
   constructor() {
     this.annotations = this.#annotations.asReadonly();
-    this.untrackedAnnotations = untracked(() => this.annotations);
   }
 }

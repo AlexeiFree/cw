@@ -54,9 +54,10 @@ export class AnnotationDragDirective implements OnInit {
   constructor() {
     effect(() => {
       const index = untracked(() => this.#annotationComponent.index());
+      const zoom = untracked(() => this.#zoomService.zoom());
 
-      this.#annotationsService.untrackedAnnotations()[index].coords();
-      this.#coordsZoom.set(untracked(() => this.#zoomService.zoom()));
+      this.#annotationsService.annotationsRaw[index].coords();
+      this.#coordsZoom.set(zoom);
     });
   }
 

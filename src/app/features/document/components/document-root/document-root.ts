@@ -23,9 +23,9 @@ import {
   DocumentDataService,
 } from '../../services';
 import { DocumentAnnotationsList } from '../annotations-list';
-import { DocumentControlPanel } from '../control-panel';
+import { DocumentControlPanel } from '../document-control-panel';
 import { DocumentLayout } from '../document-layout';
-import { DocumentPagesList } from '../pages-list';
+import { DocumentPagesList } from '../document-pages-list';
 
 @Component({
   selector: 'cw-document',
@@ -36,8 +36,8 @@ import { DocumentPagesList } from '../pages-list';
     DocumentAnnotationsList,
     DocumentLayout,
   ],
-  templateUrl: './root.html',
-  styleUrl: './root.scss',
+  templateUrl: './document-root.html',
+  styleUrl: './document-root.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocumentRoot {

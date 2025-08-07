@@ -11,8 +11,8 @@ import { DocumentZoomService } from '../../services';
 
 @Component({
   selector: 'cw-document-control-panel',
-  templateUrl: './control-panel.html',
-  styleUrl: './control-panel.scss',
+  templateUrl: './document-control-panel.html',
+  styleUrl: './document-control-panel.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocumentControlPanel {

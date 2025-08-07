@@ -5,8 +5,8 @@ import type { DocumentPageData } from '../../types';
 
 @Component({
   selector: 'cw-document-pages-list',
-  templateUrl: './pages-list.html',
-  styleUrl: './pages-list.scss',
+  templateUrl: './document-pages-list.html',
+  styleUrl: './document-pages-list.scss',
   imports: [NgOptimizedImage],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
