@@ -9,14 +9,13 @@ import {
   input,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NonNullableFormBuilder } from '@angular/forms';
 
 import { IS_SERVER } from '@/shared/injection-tokens';
 import type { LayoutCoordinates } from '@/shared/types';
 import { listenForPreciseClick } from '@/shared/utils';
 
 import { DocumentDimensionsDirective } from '../../../directives';
-import { Document } from '../document';
+import { DocumentAnnotationsService } from '../../../services';
 
 @Directive({
   selector: '[cwAnnotationAdding]',
@@ -32,8 +31,7 @@ export class AnnotationAddingDirective implements AfterViewInit {
   readonly #destroyRef = inject(DestroyRef);
   readonly #elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   readonly #changeDetectorRef = inject(ChangeDetectorRef);
-  readonly #documentComponent = inject(Document);
-  readonly #formBuilder = inject(NonNullableFormBuilder);
+  readonly #annotationsService = inject(DocumentAnnotationsService);
 
   public ngAfterViewInit(): void {
     if (this.#isServer) return;
@@ -61,11 +59,6 @@ export class AnnotationAddingDirective implements AfterViewInit {
   }
 
   #addAnnotation(coords: LayoutCoordinates): void {
-    this.#documentComponent.annotationsFormArray.push(
-      this.#formBuilder.control({
-        ...coords,
-        text: '',
-      }),
-    );
+    this.#annotationsService.push({ coords });
   }
 }

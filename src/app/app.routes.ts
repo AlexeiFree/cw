@@ -9,7 +9,8 @@ export const routes: Routes = [
   },
   {
     path: 'documents/:documentId',
-    loadComponent: () => import('./features/document').then((m) => m.Document),
+    loadComponent: () =>
+      import('./features/document').then((m) => m.DocumentRoot),
     canMatch: [isNumberIdGuard],
   },
 ];

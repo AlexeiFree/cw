@@ -13,7 +13,7 @@
     (input)="handleInput($event)"
     (focusout)="handleBlur()"
   ></div>
-  @if (data.textFormControl.value) {
+  @if (annotationData.text()) {
     <button
       class="cw-document-annotation__delete"
       (click)="handleDeleteClick()"

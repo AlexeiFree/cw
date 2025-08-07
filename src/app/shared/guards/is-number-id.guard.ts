@@ -1,7 +1,7 @@
 import { numberAttribute } from '@angular/core';
 import { CanMatchFn } from '@angular/router';
 
-export const isNumberIdGuard: CanMatchFn = (_route, segments) => {
+export const isNumberIdGuard: CanMatchFn = (_route, segments): boolean => {
   const lastSegmentPath = segments.at(-1)?.path;
   const numericLastSegment = numberAttribute(lastSegmentPath);
 

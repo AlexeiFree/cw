@@ -1,6 +1,6 @@
 @use 'utils';
 
-.cw-document {
+.cw-document-layout {
   background-color: #eee;
   display: flex;
   flex-direction: column;
@@ -18,7 +18,7 @@
   }
 
   &__body {
-    --document-padding: utils.remify(16);
+    --document-padding: #{utils.remify(16)};
 
     box-sizing: border-box;
     position: relative;

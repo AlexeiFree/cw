@@ -1,9 +1,12 @@
-import type { LayoutCoordinates } from "@/shared/types";
+import type { WritableSignal } from '@angular/core';
 
-export interface DocumentAnnotationData extends LayoutCoordinates {
-  text: string;
+import type { LayoutCoordinates } from '@/shared/types';
+
+export interface AnnotationData {
+  readonly text: WritableSignal<string>;
+  readonly coords: WritableSignal<LayoutCoordinates>;
 }
 
-export interface AnnotationDeleteEvent {
-  needConfirmation?: boolean;
+export interface AnnotationCreationData {
+  coords: LayoutCoordinates;
 }

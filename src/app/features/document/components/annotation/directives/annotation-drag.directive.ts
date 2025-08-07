@@ -1,9 +1,12 @@
 import {
   DestroyRef,
   Directive,
+  effect,
   ElementRef,
   inject,
   OnInit,
+  signal,
+  untracked,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -21,18 +24,22 @@ import { IS_SERVER } from '@/shared/injection-tokens';
 import type { LayoutCoordinates } from '@/shared/types';
 import { animationFrame$ } from '@/shared/utils';
 
-import { DocumentZoomService } from '../../../services';
-import { AnnotationDataService } from '../services';
+import {
+  DocumentAnnotationsService,
+  DocumentZoomService,
+} from '../../../services';
+import { DocumentAnnotation } from '../annotation';
 
 @Directive({
   selector: '[cwAnnotationDrag]',
 })
 export class AnnotationDragDirective implements OnInit {
+  readonly #annotationsService = inject(DocumentAnnotationsService);
   readonly #zoomService = inject(DocumentZoomService);
+  readonly #annotationComponent = inject(DocumentAnnotation);
   readonly #isServer = inject(IS_SERVER);
   readonly #destroyRef = inject(DestroyRef);
   readonly #element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
-  readonly #data = inject(AnnotationDataService);
   readonly #pointerDown$ = fromEvent<PointerEvent>(
     this.#element,
     'pointerdown',
@@ -42,23 +49,33 @@ export class AnnotationDragDirective implements OnInit {
     'pointermove',
   );
   readonly #pointerUp$ = fromEvent<PointerEvent>(this.#element, 'pointerup');
+  readonly #coordsZoom = signal(this.#zoomService.zoom());
+
+  constructor() {
+    effect(() => {
+      const index = untracked(() => this.#annotationComponent.index());
+
+      this.#annotationsService.untrackedAnnotations()[index].coords();
+      this.#coordsZoom.set(untracked(() => this.#zoomService.zoom()));
+    });
+  }
 
   public ngOnInit(): void {
     if (!this.#isServer) this.#initDragging();
   }
 
   #handlePointerDown(event: PointerEvent): LayoutCoordinates {
-    const { coords, coordsZoom } = this.#data;
+    const { coords } = this.#annotationComponent.annotationData;
     const zoom = this.#zoomService.zoom();
-    const left = event.clientX - (coords().left / coordsZoom()) * zoom;
-    const top = event.clientY - (coords().top / coordsZoom()) * zoom;
+    const left = event.clientX - (coords().left / this.#coordsZoom()) * zoom;
+    const top = event.clientY - (coords().top / this.#coordsZoom()) * zoom;
     this.#element.setPointerCapture(event.pointerId);
 
     return { left, top };
   }
 
   #handlePointerMove(move: PointerEvent, start: LayoutCoordinates): void {
-    this.#data.coords.set({
+    this.#annotationComponent.annotationData.coords.set({
       left: move.clientX - start.left,
       top: move.clientY - start.top,
     });
