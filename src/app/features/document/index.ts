@@ -1,1 +1,1 @@
-export * from './components/document-root';
+export * from './utils/create-route';

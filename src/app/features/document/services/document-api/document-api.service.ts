@@ -10,7 +10,7 @@ import { createDocumentApiUrl } from './utils';
 @Injectable({
   providedIn: 'root',
 })
-export class DocumentDataService {
+export class DocumentApiService {
   readonly #httpClient = inject(HttpClient);
 
   public fetchDocumentData(id: number): Observable<DocumentData> {

@@ -1,3 +1,3 @@
 export * from './document-annotations';
-export * from './document-data';
+export * from './document-api';
 export * from './document-zoom';

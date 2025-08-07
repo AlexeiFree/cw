@@ -10,23 +10,23 @@ import { firstValueFrom } from 'rxjs';
 
 import type { DocumentData } from '../../types';
 
-import { DocumentDataService } from './document-data.service';
+import { DocumentApiService } from './document-api.service';
 import { createDocumentApiUrl } from './utils';
 
-describe('DocumentDataService', () => {
-  let dataService: DocumentDataService;
+describe('DocumentApiService', () => {
+  let apiService: DocumentApiService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
-        DocumentDataService,
+        DocumentApiService,
         provideHttpClient(),
         provideHttpClientTesting(),
       ],
     });
 
-    dataService = TestBed.inject(DocumentDataService);
+    apiService = TestBed.inject(DocumentApiService);
   });
 
   it('method fetchDocumentData fetches document data properly', async () => {
@@ -34,7 +34,7 @@ describe('DocumentDataService', () => {
 
     const documentId = 1;
 
-    const config$ = dataService.fetchDocumentData(documentId);
+    const config$ = apiService.fetchDocumentData(documentId);
     const configPromise = firstValueFrom(config$);
     const req = httpTesting.expectOne(
       createDocumentApiUrl(documentId),
