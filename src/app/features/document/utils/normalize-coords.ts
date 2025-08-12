@@ -1,9 +1,11 @@
-import type { DocumentAnnotationCoords, Zoom } from '../types';
+import type { LayoutCoordinates } from '@/shared/types';
+
+import type { Zoom } from '../types';
 
 export const normalizeCoords = (
-  { left, top }: DocumentAnnotationCoords,
+  { left, top }: LayoutCoordinates,
   zoom: Zoom,
-): DocumentAnnotationCoords => ({
+): LayoutCoordinates => ({
   left: left / zoom,
   top: top / zoom,
 });

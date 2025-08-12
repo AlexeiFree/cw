@@ -1,26 +1,50 @@
-import { provideZonelessChangeDetection } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { Component, provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
 
 import { App } from './app';
 
-describe('App', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+const dummyText = 'Hello world';
+
+@Component({
+  standalone: true,
+  template: '<p>{{ dummyText }}</p>',
+})
+class DummyComponent {
+  protected dummyText = dummyText;
+}
+
+describe('App component', () => {
+  let fixture: ComponentFixture<App>;
+  let router: Router;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideRouter([{ path: 'dummy', component: DummyComponent }]),
+      ],
       imports: [App],
-      providers: [provideZonelessChangeDetection()],
-    }).compileComponents();
+    });
+
+    router = TestBed.inject(Router);
+    fixture = TestBed.createComponent(App);
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+  it('should be created', () => {
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(App);
+  it('should contain router-outlet', () => {
+    const outlet = fixture.nativeElement.querySelector('router-outlet');
+    expect(outlet).toBeTruthy();
+  });
+
+  it('should render routed component', async () => {
+    await router.navigateByUrl('/dummy');
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, cw');
+
+    const main = fixture.nativeElement.querySelector('main');
+    expect(main.textContent).toContain(dummyText);
   });
 });

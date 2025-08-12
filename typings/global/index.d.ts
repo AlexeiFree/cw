@@ -1,6 +1,10 @@
-export {};
+export declare global {
+  interface ObjectConstructor {
+    entries<const T extends object>(
+      o: T,
+    ): { [K in keyof T]-?: [K, T[K]] }[keyof T][];
+  }
 
-declare global {
   interface KeyboardEvent {
     target: HTMLElement;
   }

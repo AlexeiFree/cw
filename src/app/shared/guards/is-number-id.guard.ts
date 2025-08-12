@@ -1,9 +1,9 @@
-import { numberAttribute } from '@angular/core';
 import { CanMatchFn } from '@angular/router';
 
-export const isNumberIdGuard: CanMatchFn = (_route, segments) => {
-  const lastSegmentPath = segments.at(-1)?.path;
-  const numericLastSegment = numberAttribute(lastSegmentPath);
+export const isNumberIdGuard =
+  (segmentIndexForCheck: number): CanMatchFn =>
+  (_route, segments): boolean => {
+    const checkedSegment = segments[segmentIndexForCheck]?.path;
 
-  return !Number.isNaN(numericLastSegment);
-};
+    return Number.isInteger(Number(checkedSegment));
+  };

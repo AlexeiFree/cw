@@ -1,2 +1,3 @@
-export * from './document-data.service';
-export * from './document-zoom.service';
+export * from './annotations-store';
+export * from './document-api';
+export * from './document-zoom';

@@ -1,0 +1,22 @@
+<div class="cw-doc-control-panel">
+  <h1 class="cw-doc-control-panel__title">{{ title() }}</h1>
+
+  <div class="cw-doc-control-panel__controls">
+    <button
+      [disabled]="zoomService.isMin()"
+      (click)="zoomService.decrementZoom()"
+    >
+      -
+    </button>
+    <span class="cw-doc-control-panel__zoom-value">{{ displayZoom() }}</span>
+    <button
+      [disabled]="zoomService.isMax()"
+      (click)="zoomService.incrementZoom()"
+    >
+      +
+    </button>
+    <button class="cw-doc-control-panel__save" (click)="emitSave()">
+      Сохранить
+    </button>
+  </div>
+</div>

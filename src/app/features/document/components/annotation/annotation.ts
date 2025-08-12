@@ -1,86 +1,85 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  forwardRef,
+  computed,
   inject,
-  linkedSignal,
+  input,
   OnInit,
-  output,
-  signal,
+  Signal,
+  untracked,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AutofocusDirective } from '@/shared/directives';
-import { createValueAccessorProvider } from '@/shared/utils';
+import { LayoutCoordinates } from '@/shared/types';
 
-import { DocumentZoomService } from '../../services';
-import type {
-  AnnotationDeleteEvent,
-  DocumentAnnotationBase,
-  DocumentAnnotationCoords,
-} from '../../types';
+import type { AnnotationModel } from '../../models';
+import { AnnotationsStoreService, DocumentZoomService } from '../../services';
 import { normalizeCoords } from '../../utils';
 
-import { DOCUMENT_ANNOTATION } from './annotation.token';
-import {
-  AnnotationDragDirective,
-  ControlAccessorDirective,
-} from './directives';
+import { AnnotationDragDirective } from './directives';
 
 @Component({
   selector: 'cw-document-annotation',
   templateUrl: './annotation.html',
   styleUrl: './annotation.scss',
-  providers: [
-    createValueAccessorProvider(forwardRef(() => DocumentAnnotation)),
-    {
-      provide: DOCUMENT_ANNOTATION,
-      useExisting: forwardRef(() => DocumentAnnotation),
-    },
-  ],
   imports: [AutofocusDirective, ReactiveFormsModule, AnnotationDragDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DocumentAnnotation
-  extends ControlAccessorDirective
-  implements OnInit, DocumentAnnotationBase
-{
-  private readonly zoomService = inject(DocumentZoomService);
+export class DocumentAnnotation implements OnInit {
+  public readonly state = input.required<AnnotationModel>();
 
-  public readonly delete = output<AnnotationDeleteEvent | undefined>();
+  protected normalizedCoords!: Signal<LayoutCoordinates>;
 
-  public readonly formControl = new FormControl('', { nonNullable: true });
-  public readonly coords = signal<DocumentAnnotationCoords>({
-    top: 0,
-    left: 0,
-  });
-
-  public readonly normalizedCoords = linkedSignal(() =>
-    normalizeCoords(this.coords(), this.zoomService.zoom()),
-  );
+  readonly #annotationsStore = inject(AnnotationsStoreService);
+  readonly #zoomService = inject(DocumentZoomService);
 
   public ngOnInit(): void {
-    this.initHandleControlChange();
-    this.initHandleTouchedChange();
+    this.normalizedCoords = computed(() => {
+      return normalizeCoords(
+        this.state().value.coords(),
+        untracked(() => this.#zoomService.zoom()),
+      );
+    });
   }
 
-  public handleInput(event: InputEvent): void {
-    this.formControl.setValue(event.target.innerText);
+  protected handleInput(event: InputEvent): void {
+    this.state().update({
+      text: event.target.innerText,
+    });
   }
 
-  public handleBlur(): void {
-    if (!this.formControl.touched) {
-      this.formControl.markAsTouched();
+  protected handleBlur(): void {
+    if (!this.state().value.text()) {
+      this.#delete();
     }
-
-    if (!this.formControl.value) {
-      this.delete.emit(undefined);
-    }
   }
 
-  public handleEscPress(event: KeyboardEvent): void {
-    if (this.formControl.value) {
+  protected handleEscPress(event: KeyboardEvent): void {
+    if (this.state().value.text()) {
       event.target.blur();
     } else {
-      this.delete.emit(undefined);
+      this.#delete();
+    }
+  }
+
+  protected handleDeleteClick(): void {
+    this.#deleteWithConfirmation();
+  }
+
+  #confirmDeletion(): boolean {
+    return confirm(
+      `Подтверите удаление аннотации:\n${this.state().value.text()}`,
+    );
+  }
+
+  #delete(): void {
+    this.#annotationsStore.delete(this.state().id);
+  }
+
+  #deleteWithConfirmation(): void {
+    if (this.#confirmDeletion()) {
+      this.#delete();
     }
   }
 }

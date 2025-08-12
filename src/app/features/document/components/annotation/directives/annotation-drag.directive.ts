@@ -1,9 +1,12 @@
 import {
   DestroyRef,
   Directive,
+  effect,
   ElementRef,
   inject,
   OnInit,
+  signal,
+  untracked,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -14,107 +17,81 @@ import {
   of,
   switchMap,
   takeUntil,
-  takeWhile,
-  tap,
   withLatestFrom,
 } from 'rxjs';
 
 import { IS_SERVER } from '@/shared/injection-tokens';
-import {
-  animationFrame$,
-  isPointerMovedEnough,
-  wasElementSizeChanged,
-} from '@/shared/utils';
+import type { LayoutCoordinates } from '@/shared/types';
+import { animationFrame$ } from '@/shared/utils';
 
-import { DocumentDimensionsDirective } from '../../../directives';
-import { DOCUMENT_ANNOTATION } from '../annotation.token';
-
-import type { DragStartData } from './annotation-drag.types';
+import { DocumentZoomService } from '../../../services';
+import { DocumentAnnotation } from '../annotation';
 
 @Directive({
   selector: '[cwAnnotationDrag]',
 })
 export class AnnotationDragDirective implements OnInit {
-  private readonly isServer = inject(IS_SERVER);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly element =
-    inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
-  private readonly annotation = inject(DOCUMENT_ANNOTATION);
-  private readonly documentDimensions = inject(DocumentDimensionsDirective);
-
-  private readonly pointerDown$ = fromEvent<PointerEvent>(
-    this.element,
+  readonly #zoomService = inject(DocumentZoomService);
+  readonly #annotation = inject(DocumentAnnotation);
+  readonly #isServer = inject(IS_SERVER);
+  readonly #destroyRef = inject(DestroyRef);
+  readonly #element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  readonly #pointerDown$ = fromEvent<PointerEvent>(
+    this.#element,
     'pointerdown',
   );
-  private readonly pointerMove$ = fromEvent<PointerEvent>(
-    this.element,
+  readonly #pointerMove$ = fromEvent<PointerEvent>(
+    this.#element,
     'pointermove',
   );
-  private readonly pointerUp$ = fromEvent<PointerEvent>(
-    this.element,
-    'pointerup',
-  );
-  private isFilteringDone = false;
+  readonly #pointerUp$ = fromEvent<PointerEvent>(this.#element, 'pointerup');
+  readonly #coordsZoom = signal(this.#zoomService.zoom());
 
-  public ngOnInit(): void {
-    if (!this.isServer) this.initDragging();
-  }
+  constructor() {
+    effect(() => {
+      const zoom = untracked(() => this.#zoomService.zoom());
 
-  public handlePointerDown(event: PointerEvent): DragStartData {
-    const elRect = this.element.getBoundingClientRect();
-    const { clientX, clientY } = event;
-    const coords = this.annotation.coords();
-    const elementX = clientX - coords.left;
-    const elementY = clientY - coords.top;
-
-    this.element.setPointerCapture(event.pointerId);
-
-    return { elementX, elementY, elRect, clientX, clientY };
-  }
-
-  public handlePointerMove(move: PointerEvent, start: DragStartData): void {
-    const x = move.clientX;
-    const y = move.clientY;
-    this.annotation.coords.set({
-      left: x - start.elementX,
-      top: y - start.elementY,
+      this.#annotation.state().value.coords();
+      this.#coordsZoom.set(zoom);
     });
   }
 
-  private filterDuringDrag(
-    pointerMoveEvent: PointerEvent,
-    start: DragStartData,
-  ): boolean {
-    if (this.isFilteringDone) return true;
-
-    if (isPointerMovedEnough(pointerMoveEvent, start)) {
-      this.isFilteringDone = true;
-    } else {
-      return true;
-    }
-
-    return !wasElementSizeChanged(
-      this.element.getBoundingClientRect(),
-      start.elRect,
-    );
+  public ngOnInit(): void {
+    if (!this.#isServer) this.#initDragging();
   }
 
-  private initDragging(): void {
-    this.pointerDown$
+  #handlePointerDown(event: PointerEvent): LayoutCoordinates {
+    const { coords } = this.#annotation.state().value;
+    const zoom = this.#zoomService.zoom();
+    const left = event.clientX - (coords().left / this.#coordsZoom()) * zoom;
+    const top = event.clientY - (coords().top / this.#coordsZoom()) * zoom;
+    this.#element.setPointerCapture(event.pointerId);
+
+    return { left, top };
+  }
+
+  #handlePointerMove(move: PointerEvent, start: LayoutCoordinates): void {
+    this.#annotation.state().update({
+      coords: {
+        left: move.clientX - start.left,
+        top: move.clientY - start.top,
+      },
+    });
+  }
+
+  #initDragging(): void {
+    this.#pointerDown$
       .pipe(
-        map((event) => this.handlePointerDown(event)),
+        map((event) => this.#handlePointerDown(event)),
         switchMap((start) =>
-          this.pointerMove$.pipe(
+          this.#pointerMove$.pipe(
             debounce(() => animationFrame$),
-            takeWhile((move) => this.filterDuringDrag(move, start)),
             withLatestFrom(of(start)),
-            takeUntil(
-              this.pointerUp$.pipe(tap(() => (this.isFilteringDone = false))),
-            ),
+            takeUntil(this.#pointerUp$),
           ),
         ),
-        takeUntilDestroyed(this.destroyRef),
+        takeUntilDestroyed(this.#destroyRef),
       )
-      .subscribe(([move, start]) => this.handlePointerMove(move, start));
+      .subscribe(([move, start]) => this.#handlePointerMove(move, start));
   }
 }

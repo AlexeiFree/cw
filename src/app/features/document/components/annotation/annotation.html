@@ -13,10 +13,10 @@
     (input)="handleInput($event)"
     (focusout)="handleBlur()"
   ></div>
-  @if (formControl.value) {
+  @if (state().value.text()) {
     <button
       class="cw-document-annotation__delete"
-      (click)="delete.emit({ needConfirmation: true })"
+      (click)="handleDeleteClick()"
       (pointerdown)="$event.stopPropagation()"
     >
       ✕

@@ -1,15 +1,13 @@
 import { Routes } from '@angular/router';
 
-import { isNumberIdGuard } from '@/shared/guards';
+import { createDocumentRoute } from '@/features/document';
+import { createHomeRoute } from '@/features/home';
 
 export const routes: Routes = [
+  createHomeRoute(''),
+  createDocumentRoute('documents/:documentId'),
   {
-    path: '',
-    loadComponent: () => import('./features/home').then((m) => m.Home),
-  },
-  {
-    path: 'documents/:documentId',
-    loadComponent: () => import('./features/document').then((m) => m.Document),
-    canMatch: [isNumberIdGuard],
+    path: '**',
+    redirectTo: '',
   },
 ];
