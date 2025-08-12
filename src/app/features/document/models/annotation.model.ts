@@ -1,6 +1,5 @@
-import { signal } from '@angular/core';
-
 import { UnionToIntersection } from '@/shared/types';
+import { signalifyWritable } from '@/shared/utils';
 
 import type {
   AnnotationCreationData,
@@ -24,11 +23,7 @@ export class AnnotationModel {
   }
 
   constructor({ coords }: AnnotationCreationData) {
-    this.#value = {
-      coords: signal(coords),
-      text: signal(''),
-    };
-
+    this.#value = signalifyWritable({ coords, text: '' });
     this.value = this.#value;
   }
 }

@@ -1,6 +1,6 @@
 import type { Signal, WritableSignal } from '@angular/core';
 
-export type Signalify<T> = {
+export type SignalifyReadonly<T> = {
   [K in keyof T]: Signal<T[K]>;
 };
 
