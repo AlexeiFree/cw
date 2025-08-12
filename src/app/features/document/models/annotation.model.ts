@@ -1,5 +1,5 @@
 import { UnionToIntersection } from '@/shared/types';
-import { signalifyWritable } from '@/shared/utils';
+import { mapToWritableSignals } from '@/shared/utils';
 
 import type {
   AnnotationCreationData,
@@ -23,7 +23,7 @@ export class AnnotationModel {
   }
 
   constructor({ coords }: AnnotationCreationData) {
-    this.#value = signalifyWritable({ coords, text: '' });
+    this.#value = mapToWritableSignals({ coords, text: '' });
     this.value = this.#value;
   }
 }

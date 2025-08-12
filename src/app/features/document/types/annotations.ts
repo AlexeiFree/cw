@@ -1,7 +1,7 @@
 import type {
   LayoutCoordinates,
-  SignalifyReadonly,
-  SignalifyWritable,
+  ReadonlySignals,
+  WritableSignals,
 } from '@/shared/types';
 
 export interface AnnotationStateRaw {
@@ -15,8 +15,8 @@ export interface AnnotationCreationData {
 
 export type AnnotationUpdateData = Partial<AnnotationStateRaw>;
 
-export type AnnotationState = SignalifyReadonly<Readonly<AnnotationStateRaw>>;
+export type AnnotationState = ReadonlySignals<Readonly<AnnotationStateRaw>>;
 
-export type AnnotationStateWritable = SignalifyWritable<
+export type AnnotationStateWritable = WritableSignals<
   Readonly<AnnotationStateRaw>
 >;
