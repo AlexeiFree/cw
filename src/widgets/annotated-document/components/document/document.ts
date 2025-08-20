@@ -8,20 +8,20 @@ import {
 import { SaveDocumentButton } from '@/features/save-document';
 
 import { DocumentAnnotationsList } from '../annotations-list';
-import { DocumentWidgetBody } from '../document-body';
+import { AnnotatedDocumentBody } from '../document-body';
 
 @Component({
-  selector: 'cw-document-widget',
+  selector: 'cw-annotated-document',
   templateUrl: './document.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DocumentComponent,
     DocumentPagesList,
     SaveDocumentButton,
-    DocumentWidgetBody,
+    AnnotatedDocumentBody,
     DocumentAnnotationsList,
   ],
 })
-export class DocumentWidget {
+export class AnnotatedDocument {
   public readonly documentData = input.required<DocumentData>();
 }

@@ -1,0 +1,1 @@
+export { AnnotatedDocument } from './components';

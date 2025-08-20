@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 import { type DocumentData } from '@/entities/document';
-import { DocumentWidget } from '@/widgets/document';
+import { AnnotatedDocument } from '@/widgets/annotated-document';
 
 @Component({
   selector: 'cw-document',
-  imports: [DocumentWidget, DocumentWidget],
-  templateUrl: './document-root.html',
+  imports: [AnnotatedDocument],
+  templateUrl: './document.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DocumentRoot {
+export class DocumentPage {
   public readonly documentData = input.required<DocumentData>();
 }

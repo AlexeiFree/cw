@@ -5,7 +5,7 @@ import { AnnotationAddingDirective } from '@/features/add-document-annotation';
 import { DimensionsDirective } from '@/shared/directives';
 
 @Component({
-  selector: 'cw-document-widget-body',
+  selector: 'cw-annotated-document-body',
   templateUrl: './document-body.html',
   styleUrl: './document-body.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,4 +16,4 @@ import { DimensionsDirective } from '@/shared/directives';
     DimensionsDirective,
   ],
 })
-export class DocumentWidgetBody {}
+export class AnnotatedDocumentBody {}

@@ -1,1 +1,0 @@
-export { DocumentWidget } from './components';

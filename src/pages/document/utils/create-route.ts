@@ -6,8 +6,7 @@ import { resolveDocumentData } from '../resolvers';
 
 export const createDocumentRoute = (path: string): Route => ({
   path,
-  loadComponent: () =>
-    import('../components/document-root').then((m) => m.DocumentRoot),
+  loadComponent: () => import('../components').then((m) => m.DocumentPage),
   canMatch: [isNumberIdGuard(1)],
   resolve: {
     documentData: resolveDocumentData,
