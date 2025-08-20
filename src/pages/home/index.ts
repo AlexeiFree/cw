@@ -1,1 +1,1 @@
-export * from './utils/create-route';
+export { createHomeRoute } from './utils/create-route';

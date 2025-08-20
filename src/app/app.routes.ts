@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
 
-import { createDocumentRoute } from '@/pages/document';
+import { createAnnotatedDocumentRoute } from '@/pages/annotated-document';
 import { createHomeRoute } from '@/pages/home';
 
 export const routes: Routes = [
   createHomeRoute(''),
-  createDocumentRoute('documents/:documentId'),
+  createAnnotatedDocumentRoute('documents/:documentId'),
   {
     path: '**',
     redirectTo: '',

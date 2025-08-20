@@ -9,6 +9,6 @@ import { AnnotatedDocument } from '@/widgets/annotated-document';
   templateUrl: './document.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DocumentPage {
+export class AnnotatedDocumentPage {
   public readonly documentData = input.required<DocumentData>();
 }
