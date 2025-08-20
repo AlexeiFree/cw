@@ -1,0 +1,24 @@
+<div
+  class="cw-document-annotation"
+  [style.--left.px]="normalizedCoords().left"
+  [style.--top.px]="normalizedCoords().top"
+>
+  <div class="cw-document-annotation__border"></div>
+  <div
+    class="cw-document-annotation__content"
+    contenteditable
+    cwAutofocus
+    (keyup.escape)="handleEscPress($event)"
+    (input)="handleInput($event)"
+    (focusout)="handleBlur()"
+  ></div>
+  @if (state().value.text()) {
+    <button
+      class="cw-document-annotation__delete"
+      (click)="handleDeleteClick()"
+      (pointerdown)="$event.stopPropagation()"
+    >
+      ✕
+    </button>
+  }
+</div>

@@ -15,7 +15,7 @@
     "target": "ES2022",
     "module": "preserve",
     "paths": {
-      "@/*": ["./src/app/*"],
+      "@/*": ["./src/*"]
     },
     "typeRoots": ["./typings", "./node_modules/@types"]
   },
@@ -24,7 +24,7 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "typeCheckHostBindings": true,
-    "strictTemplates": true,
+    "strictTemplates": true
   },
   "files": [],
   "references": [

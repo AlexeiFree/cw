@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
-import { createDocumentRoute } from '@/features/document';
-import { createHomeRoute } from '@/features/home';
+import { createDocumentRoute } from '@/pages/document';
+import { createHomeRoute } from '@/pages/home';
 
 export const routes: Routes = [
   createHomeRoute(''),

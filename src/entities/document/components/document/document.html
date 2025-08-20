@@ -1,0 +1,14 @@
+@let data = documentData();
+
+@if (data) {
+  <cw-document-layout>
+    <cw-document-control-panel [title]="data.name" slot="header">
+      <ng-container slot="save-document">
+        <ng-content select="[slot='save-document']" />
+      </ng-container>
+    </cw-document-control-panel>
+    <ng-container slot="document-body">
+      <ng-content select="[slot='document-body']" />
+    </ng-container>
+  </cw-document-layout>
+}

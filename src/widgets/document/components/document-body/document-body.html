@@ -1,0 +1,12 @@
+<cw-document-scrollport
+  cwAnnotationAdding
+  [annotationsContainerRef]="annotationsContainerRef"
+>
+  <cw-document-body cwDimensions>
+    <ng-content select="[slot='pages-list']" />
+
+    <div #annotationsContainerRef>
+      <ng-content />
+    </div>
+  </cw-document-body>
+</cw-document-scrollport>
